@@ -4,6 +4,7 @@ export interface Quiz {
   meaning: string;
 }
 
+// Sample data for quizzes
 export const quizzes: Quiz[] = [
   { word: "臥薪嘗胆", meaning: "目的達成のために苦労を耐えること" },
   { word: "以心伝心", meaning: "言葉にせずとも心で通じ合うこと" },
