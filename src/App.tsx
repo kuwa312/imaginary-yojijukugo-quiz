@@ -3,6 +3,7 @@ import { quizzes } from "./data";
 import type { Quiz } from "./data";
 import { QuizDisplay } from "./components/QuizDisplay";
 import { ResultDisplay } from "./components/ResultDisplay";
+import "./index.css";
 
 function App() {
   const [current, setCurrent] = useState<Quiz | null>(null);
@@ -38,7 +39,7 @@ function App() {
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>四字熟語クイズ</h1>
+      <h1 className="text-3xl font-bold underline">四字熟語クイズ</h1>
       <p>四字熟語の意味を見て、○の部分を当ててみよう！</p>
 
       {current && (
