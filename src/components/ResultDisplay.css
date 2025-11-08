@@ -1,0 +1,62 @@
+/* src/components/ResultDisplay.css */
+
+/* 画面全体のコンテナ */
+.result-container {
+    text-align: center;
+    padding: 40px;
+    max-width: 600px;
+    margin: 40px auto;
+    border: 2px solid #3F51B5;
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    background-color: white;
+}
+
+/* ヘッダー */
+.result-header {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+/* スコア表示エリア */
+.score-box {
+    background-color: #E8EAF6;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 40px;
+}
+
+/* スコアの値（特大表示） */
+.score-value {
+    font-size: 72px;
+    font-weight: 900;
+    color: #3F51B5;
+    line-height: 1;
+    margin: 0;
+}
+
+/* 再挑戦ボタン */
+.restart-button {
+    padding: 14px 30px;
+    font-size: 20px;
+    background-color: #FF5722;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px #CD441B;
+    transition: all 0.1s;
+}
+
+/* ボタンのホバーエフェクト（CSSで動きを加える） */
+.restart-button:hover {
+    background-color: #E64A19;
+}
+
+.restart-button:active {
+    box-shadow: 0 1px #CD441B;
+    transform: translateY(3px);
+}
