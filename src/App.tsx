@@ -3,9 +3,30 @@ import { quizzes } from "./data";
 import type { Quiz } from "./data";
 import { QuizDisplay } from "./components/QuizDisplay";
 import { ResultDisplay } from "./components/ResultDisplay";
+import './App.css'; // 【重要】CSSをインポート
 
-// 👈 【追加】クイズの合計問題数を定義
 const TOTAL_QUESTIONS = 10;
+const PLAYER_NAMES = ["プレイヤー1", "プレイヤー2"];
+
+// プレイヤーデータ構造 (変更なし)
+interface PlayerResult {
+  name: string;
+  score: number;
+  answers: {
+    questionIndex: number;
+    correctWord: string;
+    userAnswer: string;
+    isCorrect: boolean;
+  }[];
+}
+
+// ゲームの状態管理 (変更なし)
+interface GameFlowState {
+    currentQuestionIndex: number; // 0から9
+    currentPlayerIndex: number;   // 0または1
+    isFinished: boolean;
+    showResultButton: boolean;
+}
 
 function App() {
   const [current, setCurrent] = useState<Quiz | null>(null);
@@ -13,96 +34,191 @@ function App() {
   const [input, setInput] = useState("");
   const [result, setResult] = useState("");
   
-  // 👈 【追加】スコアと終了状態
-  const [score, setScore] = useState(0); 
-  const [totalAnswered, setTotalAnswered] = useState(0); 
-  const [isFinished, setIsFinished] = useState(false);
+  const [playerResults, setPlayerResults] = useState<PlayerResult[]>(
+      PLAYER_NAMES.map(name => ({ name, score: 0, answers: [] }))
+  );
+  
+  const [flowState, setFlowState] = useState<GameFlowState>({
+      currentQuestionIndex: 0,
+      currentPlayerIndex: 0,
+      isFinished: false,
+      showResultButton: false,
+  });
+  
+  const { currentQuestionIndex, currentPlayerIndex, isFinished, showResultButton } = flowState;
 
   useEffect(() => {
-    pickRandom();
-  }, []);
+    // インデックスが変わるたびに新しい問題を取得
+    getNewQuiz(); 
+  }, [currentQuestionIndex]);
 
-  // 👈 【追加】クイズの再スタート処理
   const handleRestart = () => {
-    setScore(0);
-    setTotalAnswered(0);
-    setIsFinished(false);
-    pickRandom();
+    setPlayerResults(
+        PLAYER_NAMES.map(name => ({ name, score: 0, answers: [] }))
+    );
+    setFlowState({
+        currentQuestionIndex: 0,
+        currentPlayerIndex: 0,
+        isFinished: false,
+        showResultButton: false,
+    });
+    getNewQuiz(); 
   };
 
-  const pickRandom = () => {
-    // 👈 【変更】全問解答済みかチェック
-    if (totalAnswered >= TOTAL_QUESTIONS) {
-        setIsFinished(true); // 終了フラグを立てて処理を中断
-        return;
-    }
-
+  const getNewQuiz = () => {
     const quiz = quizzes[Math.floor(Math.random() * quizzes.length)];
     setCurrent(quiz);
 
-    // ランダムで1文字を○に置き換え
     const idx = Math.floor(Math.random() * quiz.word.length);
     const maskedWord = quiz.word.slice(0, idx) + "○" + quiz.word.slice(idx + 1);
     setMasked(maskedWord);
 
     setInput("");
     setResult("");
-    
-    // 👈 【追加】解答済みの問題数をインクリメント
-    setTotalAnswered(prev => prev + 1);
+  }
+
+  const pickRandom = () => {
+    setFlowState(prev => ({ 
+        ...prev, 
+        currentQuestionIndex: prev.currentQuestionIndex + 1,
+        showResultButton: false,
+    }));
   };
 
   const checkAnswer = () => {
     if (!current) return;
     
-    if (input === current.word) {
+    const isCorrect = input === current.word;
+    
+    // 1. 回答履歴とスコアの更新
+    setPlayerResults(prevResults => {
+        const newResults = [...prevResults];
+        const player = newResults[currentPlayerIndex];
+
+        if (isCorrect) {
+            player.score += 1;
+        }
+
+        player.answers.push({
+            questionIndex: currentQuestionIndex + 1,
+            correctWord: current.word,
+            userAnswer: input,
+            isCorrect: isCorrect,
+        });
+        return newResults;
+    });
+    
+    // 2. 結果メッセージの表示
+    if (isCorrect) {
       setResult("正解🎉");
-      // 👈 【変更】正解の場合、スコアをインクリメント
-      setScore(prev => prev + 1);
     } else {
       setResult(`不正解… 正解は ${current.word}`);
     }
+
+    // 3. 最終問題・最終プレイヤーの判定
+    const isLastQuestion = currentQuestionIndex === TOTAL_QUESTIONS - 1;
+    const isLastPlayer = currentPlayerIndex === PLAYER_NAMES.length - 1;
+    
+    if (isLastQuestion) {
+        setTimeout(() => {
+            if (isLastPlayer) {
+                setFlowState(prev => ({ ...prev, showResultButton: true }));
+            } else {
+                setFlowState(prev => ({ ...prev, showResultButton: true }));
+            }
+        }, 1500); 
+    } 
+  };
+  
+  const goToResult = () => {
+      setFlowState(prev => ({ ...prev, isFinished: true }));
+  };
+  
+  const handleNextPlayerOrQuestion = () => {
+    const isLastQuestion = currentQuestionIndex === TOTAL_QUESTIONS - 1;
+    const isLastPlayer = currentPlayerIndex === PLAYER_NAMES.length - 1;
+
+    if (isLastQuestion && !isLastPlayer) {
+        // 最終問題終了後、次のプレイヤーへ進む
+        setFlowState(prev => ({ 
+            ...prev, 
+            currentQuestionIndex: 0, // 問題インデックスをリセット
+            currentPlayerIndex: prev.currentPlayerIndex + 1, // プレイヤーを切り替え
+            showResultButton: false,
+        }));
+        getNewQuiz(); // 次の問題(1問目)をロード
+    }
   };
 
-  // 👈 【変更】表示内容を isFinished の状態に応じて切り替える
+
   const renderContent = () => {
     if (isFinished) {
-      // クイズ終了後の画面
       return (
         <ResultDisplay 
-          score={score}
+          finalResults={playerResults}
           totalQuestions={TOTAL_QUESTIONS}
-          message={score === TOTAL_QUESTIONS ? "パーフェクト！素晴らしい成績です！" : "お疲れ様でした！次こそ全問正解を目指そう！"}
-          onRestart={handleRestart} // リスタート処理を ResultDisplay に渡す
+          onRestart={handleRestart}
         />
       );
     }
     
-    // クイズ進行中の画面
+    const currentPlayerName = PLAYER_NAMES[currentPlayerIndex];
+    
     return current && (
         <>
+          <h2 className="player-turn">
+             {currentPlayerName} さんのターン
+          </h2>
+          
+          {/* 問題数表示 */}
+          <div className="question-status">
+             <p>問題 {currentQuestionIndex + 1} / {TOTAL_QUESTIONS}</p>
+          </div>
+
           <QuizDisplay
+            // key={currentQuestionIndex + currentPlayerIndex * TOTAL_QUESTIONS} を使用し、問題が変わるたびにコンポーネントを強制的にリセット
+            key={currentQuestionIndex + currentPlayerIndex * TOTAL_QUESTIONS} 
             meaning={current.meaning}
             maskedWord={masked}
             input={input}
             onInputChange={setInput}
             onCheck={checkAnswer}
-            onNext={pickRandom}
+            onNext={pickRandom} 
+            // 10問目になるか、リザルトボタンが表示されていなければ「次の問題」ボタンを表示
+            showNextButton={currentQuestionIndex < TOTAL_QUESTIONS - 1 && !showResultButton} 
           />
-          {/* 現在何問目かを表示 */}
-          <p>第 {totalAnswered} 問 / 全 {TOTAL_QUESTIONS} 問中</p> 
-          {result && <p style={{ color: result.includes('正解') ? 'green' : 'red' }}>{result}</p>}
+          
+          {result && (
+              <p className={`result-message ${result.includes('正解') ? 'result-correct' : 'result-incorrect'}`}>
+                  {result}
+              </p>
+          )}
+          
+          {showResultButton && (
+              <button 
+                  onClick={currentPlayerIndex === PLAYER_NAMES.length - 1 ? goToResult : handleNextPlayerOrQuestion} 
+                  className={`flow-button ${currentPlayerIndex === PLAYER_NAMES.length - 1 ? 'final-result' : 'next-player'}`}
+              >
+                  {currentPlayerIndex === PLAYER_NAMES.length - 1 ? "解答結果へ ▶" : `${PLAYER_NAMES[currentPlayerIndex + 1]}へ交代 ▶`}
+              </button>
+          )}
         </>
     );
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>四字熟語クイズ</h1>
-      <p>四字熟語の意味を見て、○の部分を当ててみよう！</p>
+    // 【CSSクラス適用】
+    <div className="app-container">
+      <div className="quiz-card">
+        <h1 className="quiz-title">
+            四字熟語対戦クイズ
+        </h1>
+        <p className="quiz-subtitle">
+            四字熟語の意味を見て、○の部分を当ててみよう！
+        </p>
 
-      {renderContent()} {/* 👈 変更した関数を呼び出す */}
-
+        {renderContent()}
+      </div>
     </div>
   );
 }

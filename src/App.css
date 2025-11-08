@@ -1,42 +1,110 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* === 画面全体の設定 === */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f7f8fa; /* 明るい背景色 */
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* === Appコンポーネントのメインコンテナ === */
+.app-container {
+    display: flex;             
+    justify-content: center;    
+    align-items: center;        
+    min-height: 100vh;          
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* === クイズのカードコンテナ === */
+.quiz-card {
+    max-width: 800px; 
+    width: 90%; 
+    padding: 40px; 
+    background-color: white;
+    border-radius: 16px; 
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); /* 大きな影 */
+    text-align: left;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* === ヘッダー === */
+.quiz-title {
+    text-align: center;
+    color: #1E88E5; /* アクションカラー */
+    font-size: 36px;
+    margin-bottom: 5px;
 }
 
-.card {
-  padding: 2em;
+.quiz-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
 }
 
-.read-the-docs {
-  color: #888;
+/* === プレイヤー名と問題番号 === */
+.player-turn {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #3F51B5;
+    font-size: 24px; 
+    font-weight: 700; 
+}
+
+.question-status {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 500; 
+    font-size: 18px; 
+    color: #777; 
+}
+
+/* === 判定結果メッセージ === */
+.result-message {
+    font-weight: bold;
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* 正解時の色 */
+.result-correct {
+    color: #2E7D32; 
+}
+
+/* 不正解時の色 */
+.result-incorrect {
+    color: #C62828; 
+}
+
+/* === 交代/結果ボタン === */
+.flow-button {
+    display: block;
+    width: 100%;
+    margin-top: 30px; 
+    padding: 15px; 
+    font-size: 18px; 
+    color: white; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+/* 交代ボタンのスタイル */
+.flow-button.next-player {
+    background-color: #009688;
+}
+.flow-button.next-player:hover {
+    background-color: #00796B;
+    box-shadow: 0 4px 8px rgba(0, 150, 136, 0.3);
+}
+
+/* 解答結果へボタンのスタイル */
+.flow-button.final-result {
+    background-color: #FF5722;
+}
+.flow-button.final-result:hover {
+    background-color: #E64A19;
+    box-shadow: 0 4px 8px rgba(255, 87, 34, 0.3);
 }
