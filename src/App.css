@@ -76,7 +76,9 @@ body {
     color: #C62828; 
 }
 
-/* === 交代/結果ボタン === */
+/* ------------------------------------------------------------------ */
+/* === フローボタン (次の問題/交代/結果へ) === */
+/* ------------------------------------------------------------------ */
 .flow-button {
     display: block;
     width: 100%;
@@ -107,4 +109,22 @@ body {
 .flow-button.final-result:hover {
     background-color: #E64A19;
     box-shadow: 0 4px 8px rgba(255, 87, 34, 0.3);
+}
+
+/* ------------------------------------------------------------------ */
+/* === 正解バナーのデザイン (残す) === */
+/* ------------------------------------------------------------------ */
+.skew_banner {
+    background: #fdcb04; /* 明るい黄色 */
+    border-radius: 3px;
+    font-family: "Arial", sans-serif; 
+    height: 180px;
+    margin: 20px auto; 
+    overflow: hidden;
+    text-align: center;
+    width: 270px;
+    position: relative; 
+    z-index: 10;
+    border: 4px solid #ccaa00; 
+    box-shadow: 0 0 20px rgba(253, 203, 4, 0.7); /* グロー効果 */
 }
