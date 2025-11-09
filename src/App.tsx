@@ -6,6 +6,10 @@ import { io } from "socket.io-client";
 export const SOCKET_URL =
   import.meta.env.VITE_SOCKET_URL ?? "http://localhost:3001";
 
+// 時間設定
+const QUESTION_TIME_LIMIT = 20; // 1問あたりの制限時間（秒）
+const WARNING_TIME_THRESHOLD = 10; // この秒数以下で警告色に変わる
+
 const socket = io(SOCKET_URL);
 
 interface Player {
@@ -38,7 +42,7 @@ function App() {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [questionNumber, setQuestionNumber] = useState<number>(0);
   const [totalQuestions, setTotalQuestions] = useState<number>(12);
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(QUESTION_TIME_LIMIT);
   const [answer, setAnswer] = useState<string>("");
   const [isHost, setIsHost] = useState(false);
   const [finalScores, setFinalScores] = useState<
@@ -90,7 +94,7 @@ function App() {
         setCurrentQuestion(data.question);
         setQuestionNumber(data.questionNumber);
         setTotalQuestions(data.totalQuestions);
-        setTimeLeft(30);
+        setTimeLeft(QUESTION_TIME_LIMIT);
         setAnswer("");
         setAnswerResult(null);
         setScreen("game");
@@ -114,7 +118,7 @@ function App() {
         setCurrentQuestion(data.question);
         setQuestionNumber(data.questionNumber);
         setTotalQuestions(data.totalQuestions);
-        setTimeLeft(30);
+        setTimeLeft(QUESTION_TIME_LIMIT);
         setAnswer("");
         setAnswerResult(null);
       }
@@ -206,10 +210,6 @@ function App() {
 
   // 回答送信
   const submitAnswer = () => {
-    if (!answer.trim()) {
-      alert("回答を入力してください");
-      return;
-    }
     socket.emit("submit-answer", { roomCode, answer });
   };
 
@@ -385,7 +385,9 @@ function App() {
             </div>
             <div
               className={`text-3xl font-bold ${
-                timeLeft <= 10 ? "text-red-500" : "text-indigo-600"
+                timeLeft <= WARNING_TIME_THRESHOLD
+                  ? "text-red-500"
+                  : "text-indigo-600"
               }`}
             >
               ⏱ {timeLeft}秒
@@ -400,9 +402,9 @@ function App() {
               {maskedWord}
             </div>
             <p className="text-gray-600 text-lg mb-4">【意味】</p>
-            <p className="text-gray-800 text-base mb-4">
+            <div className="text-gray-800 text-base mb-4 text-start mx-4">
               {currentQuestion.meaning}
-            </p>
+            </div>
             <p className="text-gray-600 text-lg">○に入る文字は？</p>
           </div>
 
@@ -495,7 +497,6 @@ function App() {
               </div>
             ))}
           </div>
-
           <button
             onClick={() => window.location.reload()}
             className="w-full bg-indigo-600 text-white py-4 rounded-lg font-semibold text-lg hover:bg-indigo-700 transition"
