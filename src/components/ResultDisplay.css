@@ -1,0 +1,85 @@
+/* src/components/ResultDisplay.css */
+
+/* === 全体コンテナ === */
+.result-container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* モダンなフォントを指定 */
+}
+
+/* === ヘッダー === */
+.result-header {
+    color: #4A148C; /* 深い紫色 */
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+/* === 成績テーブル全体 === */
+.score-table {
+    width: 100%;
+    margin-top: 25px;
+    border-collapse: separate; /* ボーダーを丸めるため */
+    border-spacing: 0;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+/* === テーブルヘッダー === */
+.score-table thead tr {
+    background-color: #1E88E5; /* 濃い青色 */
+    color: white;
+}
+.score-table th {
+    padding: 12px 8px;
+    text-align: center;
+}
+
+/* === プレイヤー行 === */
+.score-table td {
+    padding: 15px 8px;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+    vertical-align: middle;
+}
+.score-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* 🏆 1位の強調スタイル */
+.rank-1 {
+    background-color: #FFEB3B !important; /* 目立つ金色 */
+    font-weight: bold;
+    color: #4A148C;
+}
+
+/* === 詳細ボタン === */
+.detail-button {
+    background-color: #FF9800;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.detail-button:hover {
+    background-color: #E65100;
+}
+
+/* === 詳細ビューの正誤マーク === */
+.answer-status {
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+.status-correct {
+    background-color: #E8F5E9; /* 薄い緑 */
+    color: #2E7D32; /* 濃い緑 */
+}
+.status-incorrect {
+    background-color: #FFEBEE; /* 薄い赤 */
+    color: #C62828; /* 濃い赤 */
+}
